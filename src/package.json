@@ -1,0 +1,15 @@
+{
+  "name": "Piwik_Stats_recovery",
+  "version": "1.0.0",
+  "description": "Recover stats from Piwik for MeetAura",
+  "main": "index.js",
+  "author": "Ferimer",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.18.1",
+    "node-xlsx": "^0.10.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1",
+    "zero-fill": "^2.2.3"
+  }
+}
