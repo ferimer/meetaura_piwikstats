@@ -65,6 +65,19 @@ function getUsersPromises() {
   })
 }
 
+// Looks for a Poll near timestamp on pollData array
+function getPollId(pollData, timestamp) {
+  const statsTime = moment(timestamp)
+  for (let i = 2; i < pollData.length; i++) {
+    let row = pollData[i]
+    let milliseconds = moment(row[7]) - statsTime
+    if (milliseconds > 0 && milliseconds < 600000) { // 10 minutes difference
+      return row[0]
+    }
+  }
+  return ''
+}
+
 function main(pollFile) {
   let pollData = null
 
@@ -104,7 +117,7 @@ function main(pollFile) {
         d.userId, formatDate(d.date), d.time, formatDuration(d.duration),
         d.login, d.actions, d.rating,
         d.output, d.sms, d.channel_change, d.from_beginning, d.tv_info,
-        d.recomendation, d.search, d.wifi
+        d.recomendation, d.search, d.wifi, getPollId(pollData, d.date * 1000)
       ])
     )
     let tabs = [
