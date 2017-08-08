@@ -246,6 +246,10 @@ moment@^2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
+node-csv@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/node-csv/-/node-csv-0.1.2.tgz#ffc86df25f3dc0739020ab15121e2d3033e74700"
+
 node-xlsx@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/node-xlsx/-/node-xlsx-0.10.0.tgz#34744a5f285f77a05c615d1e1789d3dfc06c93ad"

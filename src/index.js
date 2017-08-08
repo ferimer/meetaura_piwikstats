@@ -12,6 +12,7 @@ const zeroFill = require('zero-fill');
 const rp = require('request-promise');
 const xlsx = require('node-xlsx');
 const fs = require('fs');
+const csv = require('node-csv').createParser();
 
 function PiwikReportingApi(method, parameters) {
   let params = '';
@@ -23,6 +24,32 @@ function PiwikReportingApi(method, parameters) {
     uri: `${baseURI}&method=${method}${params}`,
     json: true
   });
+}
+
+function processPollPromise(file) {
+  if (file) {
+    console.log(`Loading poll from ${file}`)
+    return new Promise(resolve => {
+      fs.readFile(file, (err, buffer) => {
+        if (err) {
+          console.error(`Error reading ${file}. Exiting`)
+          process.exit()
+        }
+
+        csv.parse(buffer, (err, data) => {
+          if (err) {
+            console.error(`Error parsing ${file}. Exiting`)
+            process.exit()
+          }
+          resolve(data)
+        })
+      })
+    })
+  } else {
+    // No poll, empty data
+    return Promise.resolve([[]])
+  }
+
 }
 
 function getUsersPromises() {
@@ -38,9 +65,17 @@ function getUsersPromises() {
   })
 }
 
-function main() {
-  getUsersPromises()
-  .then(promises => Promise.all(promises))
+function main(pollFile) {
+  let pollData = null
+
+  Promise.all([
+    processPollPromise(pollFile),
+    getUsersPromises()
+  ])
+  .then(poll_user_promises => {
+    pollData = poll_user_promises[0]
+    return Promise.all(poll_user_promises[1])
+  })
   .then(users => {
     console.log('All data recovered. Processing...')
     // TODO: Filtrar por tienda
@@ -62,7 +97,7 @@ function main() {
     let data = [[
       'USER_ID', 'FECHA', 'HORA', 'DURACIÓN', 'LOGIN', '#ACCIONES', 'RATING',
       'SALIDA', 'SMS', 'CAMBIO CANAL', 'VER PRINCIPIO', 'TV INFO',
-      'RECOMENDACIÓN', 'BÚSQUEDA', 'WIFI'
+      'RECOMENDACIÓN', 'BÚSQUEDA', 'WIFI', 'ENCUESTA'
     ]]
     usersData.forEach(d =>
       data.push([
@@ -72,13 +107,19 @@ function main() {
         d.recomendation, d.search, d.wifi
       ])
     )
-    let buffer = xlsx.build([
+    let tabs = [
       {
         name: 'DETALLE VISITAS',
         data
       }
-    ])
-    fs.writeFileSync('meetaura-stats.xlsx', buffer)
+    ]
+    if (pollFile) {
+      tabs.push({
+        name: 'ENCUESTA',
+        data: pollData
+      })
+    }
+    fs.writeFileSync('meetaura-stats.xlsx', xlsx.build(tabs))
     console.log('Done')
   })
   .catch((error) => {
@@ -176,4 +217,12 @@ function storeUserStats(user) {
   })
 }
 
-main();
+//////
+
+let encuestaPos = process.argv.indexOf('-q')
+let encuesta = null
+if (encuestaPos > 0 && process.argv.length > encuestaPos + 1) {
+  encuesta = process.argv[encuestaPos+1]
+}
+
+main(encuesta);
