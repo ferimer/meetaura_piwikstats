@@ -114,7 +114,7 @@ function main(pollFile) {
     ]]
     usersData.forEach(d =>
       data.push([
-        d.userId, formatDate(d.date), d.time, formatDuration(d.duration),
+        d.userId, d.serverDate, d.time, d.visitDurationPretty,
         d.login, d.actions, d.rating,
         d.output, d.sms, d.channel_change, d.from_beginning, d.tv_info,
         d.recomendation, d.search, d.wifi, getPollId(pollData, d.date * 1000)
@@ -143,12 +143,17 @@ function main(pollFile) {
 
 const usersData = [];
 function storeUserStats(user) {
+  console.log(user.lastVisits.length);
   user.lastVisits.forEach(visit => {
     let data = {
       userId: user.userId,
       date: visit.serverTimestamp,
+      serverDate: visit.serverDate,
       time: visit.serverTimePretty,
+      //time: visit.visitLocalTime,
       duration: 0,
+      visitDurationPretty: visit.visitDurationPretty,
+      visitDuration: visit.visitDuration,
       login: 'N/A',
       actions: 0,
       rating: 'N/A',
@@ -172,7 +177,7 @@ function storeUserStats(user) {
           break
 
         case 'session':
-          data.duration = action.eventValue || visit.visitDuration || 0
+          data.duration = action.eventValue || 0
           break
 
         case 'sms_requesting':
@@ -181,7 +186,7 @@ function storeUserStats(user) {
 
 
         case 'valoration':
-          data.rating = data.eventValue
+          data.rating = action.eventValue
           break
 
         case 'wifi':
@@ -216,8 +221,10 @@ function storeUserStats(user) {
               break
 
             case 'wifi_info':
+            case 'wifi_enable':
               data.wifi++
               data.actions++
+              data.output = "WIFI"
               break
 
             case 'goodbye':
