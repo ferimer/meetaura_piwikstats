@@ -8,7 +8,6 @@ const baseURI = `${piwik_uri}?module=API&token_auth=${token}&idSite=${idSite}&fo
 
 // MODULES
 const moment = require('moment');
-const zeroFill = require('zero-fill');
 const rp = require('request-promise');
 const xlsx = require('node-xlsx');
 const fs = require('fs');
@@ -97,15 +96,6 @@ function main(pollFile) {
     return usersData
   })
   .then(usersData => {
-    function formatDate(timestamp) {
-      return moment(timestamp * 1000).toISOString()
-    }
-    function formatDuration(seconds) {
-      let aux = seconds / 60
-      let minutes = Math.floor(aux)
-      return `${zeroFill(2, minutes, '0')}:${zeroFill(2, Math.round((aux - minutes) * 60), '0')}`
-    }
-
     console.log('Generating XLSX ...')
     let data = [[
       'USER_ID', 'FECHA', 'HORA', 'DURACIÓN', 'LOGIN', '#ACCIONES', 'RATING',

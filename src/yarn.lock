@@ -399,7 +399,3 @@ xlsx@^0.10.8:
     crc-32 "~1.1.0"
     exit-on-epipe "~1.0.1"
     ssf "~0.10.0"
-
-zero-fill@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/zero-fill/-/zero-fill-2.2.3.tgz#a3def06ba5e39ae644850bb4ca2ad4112b4855e9"
