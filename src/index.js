@@ -143,7 +143,6 @@ function main(pollFile) {
 
 const usersData = [];
 function storeUserStats(user) {
-  console.log(user.lastVisits.length);
   user.lastVisits.forEach(visit => {
     let data = {
       userId: user.userId,
