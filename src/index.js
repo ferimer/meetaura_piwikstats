@@ -98,13 +98,13 @@ function main(pollFile) {
   .then(usersData => {
     console.log('Generating XLSX ...')
     let data = [[
-      'USER_ID', 'FECHA', 'HORA', 'DURACIÓN', 'LOGIN', '#ACCIONES', 'RATING',
+      'USER_ID', 'IP', 'FECHA', 'HORA', 'DURACIÓN', 'LOGIN', '#ACCIONES', 'RATING',
       'SALIDA', 'SMS', 'CAMBIO CANAL', 'VER PRINCIPIO', 'TV INFO',
       'RECOMENDACIÓN', 'BÚSQUEDA', 'WIFI', 'ENCUESTA'
     ]]
     usersData.forEach(d =>
       data.push([
-        d.userId, d.serverDate, d.time, d.visitDurationPretty,
+        d.userId, d.visitIp, d.serverDate, d.time, d.visitDurationPretty,
         d.login, d.actions, d.rating,
         d.output, d.sms, d.channel_change, d.from_beginning, d.tv_info,
         d.recomendation, d.search, d.wifi, getPollId(pollData, d.date * 1000)
@@ -136,6 +136,7 @@ function storeUserStats(user) {
   user.lastVisits.forEach(visit => {
     let data = {
       userId: user.userId,
+      visitIp: visit.visitIp,
       date: visit.serverTimestamp,
       serverDate: visit.serverDate,
       time: visit.serverTimePretty,
